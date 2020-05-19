@@ -1,14 +1,12 @@
-import java.util.*;
+import java.util.ArrayList;
 
-public class BricksGame {
+public class BG {
 
 	static final int rows = 11;
 	static final int cols = 15;
-	private final int speed = 5500;
 	int score;
 	private ArrayList<Brick> bricks;
 	Ball ball;
-	Window window;
 	double startX;
 	double startY;
 	double startAngle;
@@ -17,62 +15,38 @@ public class BricksGame {
 	public int Wallthiccness = 10;
 	private final boolean groundDeath;
 	boolean finished;
+	boolean end;
 	private int scoreToWin;
 
-	BricksGame(Window window, double x, double y, double angle, boolean groundDeath) {
-		this.window = window;
+	BG(double x, double y, double width, double height, double angle, boolean groundDeath) {
 		this.startX = x;
 		this.startY = y;
 		this.startAngle = angle;
-		width = window.getWidth();
-		height = window.getHeight();
+		this.width = width;
+		this.height = height;
 		score = 0;
 		this.groundDeath = groundDeath;
 		finished = false;
+		end = false;
 	}
 
 	void createConfig() {
-		drawBackground();
 		createBricks1();
 		scoreToWin = bricks.size();
-		drawBricks();
 		ball = new Ball(startX, startY, startAngle, 2, 5);
-		ball.draw(window);
 	}
 
 	void update() {
 		if (score == scoreToWin) {
-			endGame();
+			finished = true;
+			System.out.println("WON");
 		}
 		if (finished) {
-			endGameWithScore();
+			System.out.println("Your score: " +  score);
+			end = true;
 		}
-
-		drawBackground();
-		drawBricks();
 		ball.update();
-		ball.draw(window);
-		window.refreshAndClear(1000 / speed);
-	}
-
-	void endGameWithScore() {
-		drawBackground();
-		window.setColor(255, 255, 255);
-		window.setFontSize(50);
-		window.drawString("SCORE: " + score, width / 3, height / 2);
-		window.refresh();
-		window.waitUntilClosed();
-
-	}
-
-	void endGame() {
-		drawBackground();
-		window.setColor(255, 255, 255);
-		window.setFontSize(50);
-		window.drawString("WON", width / 3, height / 2);
-		window.refresh();
-		window.waitUntilClosed();
-	}
+		}
 
 	void createBricks() {
 		bricks = new ArrayList<Brick>();
@@ -103,29 +77,6 @@ public class BricksGame {
 		
 	}
 
-	void drawBackground() {
-		window.setColor(51, 51, 255);
-		window.fillRect(0, 0, width, height);
-		window.setColor(0, 0, 0);
-		window.fillRect(0, 0, width, Wallthiccness);
-		window.fillRect(0, 0, Wallthiccness, height);
-		window.fillRect(width - Wallthiccness, 0, Wallthiccness, height);
-		window.fillRect(0, height - Wallthiccness, width, Wallthiccness);
-		drawScore();
-	}
-
-	void drawScore() {
-		window.setFontSize(15);
-		window.setColor(255, 255, 255);
-		window.drawString("Score: " + score, 11, 25);
-	}
-
-	void drawBricks() {
-		for (Brick b : bricks) {
-			b.draw(window);
-		}
-	}
-
 	class Ball {
 		double x;
 		double y;
@@ -139,11 +90,6 @@ public class BricksGame {
 			this.angle = angle;
 			this.stepsize = stepsize;
 			this.size = size;
-		}
-
-		void draw(Window window) {
-			window.setColor(255, 255, 0);
-			window.fillCircle(x, y, size);
 		}
 
 		void update() {
@@ -222,16 +168,6 @@ public class BricksGame {
 			return change;
 		}
 
-		double invY() {
-			return 360 - angle;
-		}
-
-		double invX() {
-			if (angle >= 0 && angle <= 180)
-				return 180 - angle;
-			return 360 - angle + 180;
-		}
-
 		double toDown() {
 			if (angle >= 0 && angle <= 90) {
 				return 360 - angle;
@@ -280,13 +216,6 @@ public class BricksGame {
 			this.y = y;
 			this.width = width;
 			this.height = height;
-		}
-
-		void draw(Window window) {
-			window.setColor(255, 0, 0);
-			window.fillRect(x, y, width, height);
-			window.setColor(0, 0, 0);
-			window.drawRect(x, y, width, height);
 		}
 
 		/*
